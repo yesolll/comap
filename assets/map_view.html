@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6fd2328f32ab215386da9577afe7952f&libraries=services,clusterer"
+    >
+    </script>
+</head>
+
+<body onload="createMap();">
+    <div id="map" style="width:100wh;height:70vh;"></div>
+    <button onclick="keywordSearch()">검색</button>
+</body>
+
+<script>
+
+    function createMap(){
+        var container = document.getElementById('map');
+        var options = {
+        center: new kakao.maps.LatLng(37.293188, 127.049761),
+        level: 3
+        };
+
+        var map = new kakao.maps.Map(container, options)
+    }
+
+    function keywordSearch() {
+        var places = new kakao.maps.services.Places();
+        places.setMap(map);
+
+        var callback = function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                console.log(result);
+            }
+        };
+
+        places.keywordSearch('판교 치킨', callback);
+    }
+
+</script>
+
+</html>
