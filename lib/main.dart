@@ -1,6 +1,9 @@
 import 'package:comap/src/home_screen.dart';
+import 'package:comap/src/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 void main() async {
@@ -25,11 +28,32 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+
+    Future<bool> _checkLoginStatus() async {
+      String? isLoggedIn = await secureStorage.read(key: 'isLoggedIn');
+      return isLoggedIn == 'true';
+    }
+
+    return GetMaterialApp(
+        home: FutureBuilder(
+          future: _checkLoginStatus(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              if (snapshot.hasData && snapshot.data == true) {
+                return HomeScreen();
+              } else {
+                return LoginScreen();
+              }
+            }
+          },
+        )
     );
   }
 }
