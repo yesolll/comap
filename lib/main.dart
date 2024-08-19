@@ -1,17 +1,10 @@
 import 'package:comap/src/home_screen.dart';
 import 'package:comap/src/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 void main() async {
-  await dotenv.load(fileName: '.env');
-  AuthRepository.initialize(
-    appKey: dotenv.env['KAKAO_MAP_APP_KEY_JS'] ?? '',
-    baseUrl: 'http://localhost:10030'
-  );
   runApp(const MyApp());
 }
 

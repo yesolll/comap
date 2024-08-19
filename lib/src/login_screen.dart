@@ -1,5 +1,4 @@
 import 'package:comap/src/home_screen.dart';
-import 'package:comap/src/input_webview_web.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,10 +14,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _showWebView(BuildContext context) {
-    return Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => InputWebView()));
-  }
+  // Future<void> _showWebView(BuildContext context) {
+  //   return Navigator.of(context)
+  //       .push(MaterialPageRoute(builder: (context) => InputWebView()));
+  // }
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -28,7 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // TODO: Replace with your actual login logic
       if (username == 'admin' && password == 'password') {
         await secureStorage.write(key: 'isLoggedIn', value: 'true');
-        _showWebView(context);
+        await secureStorage.write(key: 'userName', value: '예쏠');
+        Get.offAll(() => const HomeScreen());
+        // _showWebView(context);
       } else {
         _showErrorDialog();
       }
