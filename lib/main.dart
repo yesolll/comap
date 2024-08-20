@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
               return Center(child: CircularProgressIndicator());
             } else {
               if (snapshot.hasData && snapshot.data == true) {
-                return const HomeScreen();
+                return const LoginScreen();
               } else {
                 return const LoginScreen();
               }
