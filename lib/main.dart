@@ -9,7 +9,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -27,22 +27,22 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-    Future<bool> _checkLoginStatus() async {
+    Future<bool> checkLoginStatus() async {
       String? isLoggedIn = await secureStorage.read(key: 'isLoggedIn');
       return isLoggedIn == 'true';
     }
 
     return GetMaterialApp(
         home: FutureBuilder(
-          future: _checkLoginStatus(),
+          future: checkLoginStatus(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else {
               if (snapshot.hasData && snapshot.data == true) {
-                return HomeScreen();
+                return const HomeScreen();
               } else {
-                return LoginScreen();
+                return const LoginScreen();
               }
             }
           },

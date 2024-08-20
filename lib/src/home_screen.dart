@@ -1,4 +1,4 @@
-import 'package:comap/src/input_webview_web.dart';
+import 'package:comap/src/map_webview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -42,6 +42,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Future<void> _showWebView(BuildContext context) {
     return Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => InputWebView()));
+        .push(MaterialPageRoute(builder: (context) => const MapWebView()));
   }
 }

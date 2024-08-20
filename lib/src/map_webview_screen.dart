@@ -3,14 +3,14 @@ import 'dart:html' as html;
 
 import 'package:flutter/material.dart';
 
-class InputWebView extends StatefulWidget {
-  const InputWebView({super.key});
+class MapWebView extends StatefulWidget {
+  const MapWebView({super.key});
 
   @override
-  State<InputWebView> createState() => _InputWebViewState();
+  State<MapWebView> createState() => _MapWebViewState();
 }
 
-class _InputWebViewState extends State<InputWebView> {
+class _MapWebViewState extends State<MapWebView> {
   @override
   void initState() {
     super.initState();
