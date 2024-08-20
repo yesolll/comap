@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:comap/model/Place.dart';
-import 'package:comap/src/home_screen.dart';
+import 'package:comap/model/MemberInfo.dart';
 import 'package:comap/src/place_list_screen.dart';
 import 'package:comap/util/service/apiCall/ApiCallService.dart';
 import 'package:comap/util/service/apiCall/RequestData.dart';
@@ -18,19 +17,47 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   final _formKey = GlobalKey<FormState>();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-  final _usernameController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _login() async {
+  int responseCode = 0;
+  MemberInfo memberInfo = MemberInfo(id: '', nickname: '', accessToken: '', refreshToken: '');
+
+  Future<void> _login(String nickname, String password) async {
+    late String responseStr;
+    responseStr = await apiCallProtocol(
+        RequestData(
+            url: '/jwt/login',
+            data: {'nickname':nickname, 'password':password},
+            apiCallType: ApiCallType.POST,
+            tokenType: false
+        )
+    );
+    Map<String, dynamic> memberInfoStr = jsonDecode(responseStr)['response'];
+    MemberInfo memberInfo = MemberInfo.fromJson(memberInfoStr);
+    int responseCode = jsonDecode(responseStr)['httpCode'];
+
+    setState(() {
+      this.responseCode = responseCode;
+      this.memberInfo = memberInfo;
+    });
+  }
+
+  Future<void> login() async {
     if (_formKey.currentState!.validate()) {
-      String username = _usernameController.text.trim();
+      String nickname = _nicknameController.text.trim();
       String password = _passwordController.text.trim();
-      if (username == 'admin' && password == 'password') {
+
+      await _login(nickname, password);
+      if (responseCode == 201) {
         // 로그인 API 호출
-        // await secureStorage.write(key: 'isLoggedIn', value: 'true');
-        // await secureStorage.write(key: 'accessToken', value: '받은');
+        await secureStorage.write(key: 'isLoggedIn', value: 'true');
+        await secureStorage.write(key: 'nickname', value: memberInfo.nickname);
+        await secureStorage.write(key: 'accessToken', value: memberInfo.accessToken);
+        await secureStorage.write(key: 'refreshToken', value: memberInfo.refreshToken);
         Get.offAll(() => const PlaceListScreen());
       } else {
         _showErrorDialog();
@@ -68,11 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   TextFormField(
-                    controller: _usernameController,
+                    controller: _nicknameController,
                     decoration: const InputDecoration(labelText: '닉네임'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return '아이디를 입력해주세요.';
+                        return '닉네임을 입력해주세요.';
                       }
                       return null;
                     },
@@ -90,14 +117,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: _login,
-                    child: Text('로그인'),
+                    onPressed: login,
+                    child: const Text('로그인'),
                   ),
                   TextButton(
                     onPressed: () {
                       // TODO: Navigate to signup page
                     },
-                    child: Text('아직 회원가입이 되어 있지 않나요?'),
+                    child: const Text('아직 회원가입이 되어 있지 않나요?'),
                   ),
                 ],
               ),

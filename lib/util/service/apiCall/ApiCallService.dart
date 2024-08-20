@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:comap/model/Place.dart';
 import 'package:comap/util/service/apiCall/ApiResultProperty.dart';
 import 'package:comap/util/service/apiCall/RequestData.dart';
 import 'package:comap/util/service/apiCall/ResponseData.dart';
