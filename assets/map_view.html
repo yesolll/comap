@@ -16,14 +16,34 @@
 
 <script>
 
+    function getUrlParams() {
+        var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+            return paramPair.split(/=(.+)?/).slice(0, 2);
+        }).reduce(function(obj, pairArray) {
+            obj[pairArray[0]] = pairArray[1];
+            return obj;
+        }, {});
+        return urlParams;
+    }
+
     function createMap(){
+        var params = getUrlParams();
+        console.log(params);
+
         var container = document.getElementById('map');
         var options = {
-        center: new kakao.maps.LatLng(37.293188, 127.049761),
-        level: 3
+            center: new kakao.maps.LatLng(params.y, params.x),
+            level: 3
         };
 
         var map = new kakao.maps.Map(container, options)
+
+        var markerPosition  = new kakao.maps.LatLng(params.y, params.x);
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        marker.setMap(map);
+
     }
 
     function keywordSearch() {
