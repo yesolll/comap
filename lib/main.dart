@@ -1,5 +1,6 @@
 import 'package:comap/src/home_screen.dart';
 import 'package:comap/src/login_screen.dart';
+import 'package:comap/src/place_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -28,8 +29,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     Future<bool> checkLoginStatus() async {
-      String? isLoggedIn = await secureStorage.read(key: 'isLoggedIn');
-      return isLoggedIn == 'true';
+      String? nickname = await secureStorage.read(key: 'nickname');
+      return nickname != null;
     }
 
     return GetMaterialApp(
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
               return Center(child: CircularProgressIndicator());
             } else {
               if (snapshot.hasData && snapshot.data == true) {
-                return const LoginScreen();
+                return const PlaceListScreen();
               } else {
                 return const LoginScreen();
               }

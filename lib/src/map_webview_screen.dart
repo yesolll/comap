@@ -4,13 +4,20 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 
 class MapWebView extends StatefulWidget {
-  const MapWebView({super.key});
+  final String? x;
+  final String? y;
+
+  const MapWebView({super.key,
+    required this.x,
+    required this.y,
+  });
 
   @override
   State<MapWebView> createState() => _MapWebViewState();
 }
 
 class _MapWebViewState extends State<MapWebView> {
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +38,10 @@ class _MapWebViewState extends State<MapWebView> {
       appBar: AppBar(title: Text('맛집 찾기')),
       body: HtmlElementView(
         viewType: 'input-webview',
+        creationParams: <String, Object?>{
+          'x': widget.x,
+          'y': widget.y
+        },
       ),
     );
   }

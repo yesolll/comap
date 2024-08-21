@@ -40,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Future<void> _showWebView(BuildContext context) {
-    return Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const MapWebView()));
+  Future<void> _showWebView(BuildContext context) async { // 고침
+    // return Navigator.of(context)
+    //     .push(MaterialPageRoute(builder: (context) => const MapWebView()));
   }
 }
