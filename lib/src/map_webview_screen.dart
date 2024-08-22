@@ -1,7 +1,10 @@
 import 'dart:ui_web' as uiWeb;
 import 'dart:html' as html;
 
+import 'package:comap/src/place_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 
 class MapWebView extends StatefulWidget {
   String? x;
@@ -20,21 +23,22 @@ class _MapWebViewState extends State<MapWebView> {
 
   @override
   void initState() {
-    super.initState();
 
     print(getUrl(widget.x!, widget.y!));
     uiWeb.platformViewRegistry.registerViewFactory(
-      'input-webview',
+      'input-webview${widget.x}',
           (int viewId) => html.IFrameElement()
         ..style.width = '100%'
         ..style.height = '100%'
         ..src = getUrl(widget.x!, widget.y!),
     );
+
+    super.initState();
+
   }
 
   @override
   void dispose() {
-    uiWeb.platformViewRegistry.registerViewFactory('input-webview', ()=>{});
     super.dispose();
   }
 
@@ -46,10 +50,11 @@ class _MapWebViewState extends State<MapWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: () {setState(() {});Get.offAll(() => const PlaceListScreen());}, icon: Icon(Icons.menu)),
           title: Text('맛집 찾기'),
       ),
       body: HtmlElementView(
-        viewType: 'input-webview',
+        viewType: 'input-webview${widget.x}',
       ),
     );
   }
