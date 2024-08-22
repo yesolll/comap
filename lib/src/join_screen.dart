@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:comap/model/MemberInfo.dart';
-import 'package:comap/src/join_screen.dart';
-import 'package:comap/src/place_list_screen.dart';
+import 'package:comap/src/login_screen.dart';
 import 'package:comap/util/service/apiCall/ApiCallService.dart';
 import 'package:comap/util/service/apiCall/RequestData.dart';
 import 'package:comap/util/service/apiCall/type/ApiCallType.dart';
@@ -10,72 +8,63 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class JoinScreen extends StatefulWidget {
+  const JoinScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _JoinScreenState createState() => _JoinScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _JoinScreenState extends State<JoinScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  final _emailController = TextEditingController();
   final _nicknameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   int responseCode = 0;
-  MemberInfo memberInfo = MemberInfo(id: '', nickname: '', accessToken: '', refreshToken: '');
-
-  Future<void> _login(String nickname, String password) async {
+  Future<void> _join(String email, String nickname, String password) async {
     late String responseStr;
     responseStr = await apiCallProtocol(
         RequestData(
-            url: '/jwt/login',
-            data: {'nickname':nickname, 'password':password},
+            url: '/api/v1/member/join',
+            data: {'email':email, 'nickname':nickname, 'password':password},
             apiCallType: ApiCallType.POST,
             tokenType: false
         )
     );
-    Map<String, dynamic> memberInfoStr = jsonDecode(responseStr)['response'];
-    MemberInfo memberInfo = MemberInfo.fromJson(memberInfoStr);
     int responseCode = jsonDecode(responseStr)['httpCode'];
 
     setState(() {
       this.responseCode = responseCode;
-      this.memberInfo = memberInfo;
     });
   }
 
-  Future<void> login() async {
+  Future<void> join() async {
     if (_formKey.currentState!.validate()) {
+      String email = _emailController.text.trim();
       String nickname = _nicknameController.text.trim();
       String password = _passwordController.text.trim();
 
-      // 로그인 API 호출
-      await _login(nickname, password);
-
+      await _join(email, nickname, password);
       if (responseCode == 201) {
-        await secureStorage.write(key: 'isLoggedIn', value: 'true');
-        await secureStorage.write(key: 'nickname', value: memberInfo.nickname);
-        await secureStorage.write(key: 'accessToken', value: memberInfo.accessToken);
-        await secureStorage.write(key: 'refreshToken', value: memberInfo.refreshToken);
-        Get.offAll(() => const PlaceListScreen());
+        _showDialog('회원가입 성공', '인증메일이 발송되었습니다.');
       } else {
-        _showErrorDialog();
+        _showDialog('회원가입 실패', '입력값을 확인하세요.');
       }
     }
   }
 
-  void _showErrorDialog() {
+  void _showDialog(String title, String content) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('로그인 실패'),
-        content: const Text('아이디 또는 비밀번호를 확인해주세요.'),
+        title: Text(title),
+        content: Text(content),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Get.offAll(() => const LoginScreen()),
             child: const Text('확인'),
           ),
         ],
@@ -89,13 +78,23 @@ class _LoginScreenState extends State<LoginScreen> {
       body: ListView(
         children: [
           const SizedBox(height: 70),
-          const Text('로그인', style: TextStyle(fontSize: 32), textAlign: TextAlign.center),
+          const Text('회원가입', style: TextStyle(fontSize: 32), textAlign: TextAlign.center),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: '이메일'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '이메일을 입력해주세요.';
+                      }
+                      return null;
+                    },
+                  ),
                   TextFormField(
                     controller: _nicknameController,
                     decoration: const InputDecoration(labelText: '닉네임'),
@@ -119,14 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: login,
-                    child: const Text('로그인'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Get.offAll(() => const JoinScreen());
-                    },
-                    child: const Text('아직 회원가입이 되어 있지 않나요?'),
+                    onPressed: join,
+                    child: const Text('회원가입'),
                   ),
                 ],
               ),
